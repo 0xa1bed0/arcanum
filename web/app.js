@@ -26,15 +26,15 @@ async function startReceive() {
         const keyHash = await hashPublicKey(publicKeyStr);
 
         statusDiv.innerHTML = `
-            <div class="warning-notice">
-                <strong>Keep this tab open.</strong> Closing it destroys your private key. 60 second timeout.
-            </div>
             <div class="status success">
                 <strong>Ready to receive!</strong><br>
                 Share this key with the sender:
             </div>
             <div class="key-display" id="generated-key">${publicKeyStr}</div>
             <button class="copy-btn" onclick="copyKey('${publicKeyStr}')">Copy Key</button>
+            <div class="warning-notice">
+                <strong>Keep this tab open.</strong> Closing it destroys your private key.
+            </div>
             <div class="status info" style="margin-top: 15px;">Waiting for secret...</div>
         `;
 

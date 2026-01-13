@@ -387,7 +387,7 @@
             padding: 0.75rem 1rem;
             border-radius: 8px;
             font-size: 0.8rem;
-            margin-bottom: 1.5rem;
+            margin-top: 1.5rem;
             line-height: 1.5;
         }
 
@@ -699,6 +699,26 @@
             color: white;
         }
 
+        /* GitHub CTA in demo box */
+        .github-cta {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .github-cta a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .github-cta a:hover {
+            text-decoration: underline;
+        }
+
         /* CTA Section */
         .cta-section {
             padding: 6rem 1rem;
@@ -971,6 +991,10 @@
                     <button id="send-btn" onclick="startSend()">Send</button>
                     <div id="send-status"></div>
                     <button class="back-btn" onclick="showMainButtons()">Back</button>
+                </div>
+
+                <div class="github-cta">
+                    Useful? <a href="https://github.com/0xa1bed0/arcanum" target="_blank">Star us on GitHub</a>
                 </div>
             </div>
         </div>
