@@ -8,7 +8,10 @@ function connectWebSocket(url) {
         const ws = new WebSocket(url);
 
         ws.onopen = () => resolve(ws);
-        ws.onerror = (err) => reject(new Error('Failed to connect'));
+        ws.onerror = (err) => { 
+            console.log('Relay server connection error:', err);
+            reject(new Error('Failed to connect')); 
+        }
 
         setTimeout(() => reject(new Error('Connection timeout')), 5000);
     });
