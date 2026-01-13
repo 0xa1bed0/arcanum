@@ -1,0 +1,11 @@
+{
+  "name": "arcanum-relay",
+  "version": "1.0.0",
+  "main": "server.js",
+  "dependencies": {
+    "ws": "^8.19.0"
+  },
+  "scripts": {
+    "start": "node server.js"
+  }
+}
