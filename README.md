@@ -64,7 +64,7 @@ docker run -d -p 8080:8080 ghcr.io/0xa1bed0/arcanum:latest
 docker run -d -p 8080:8080 ghcr.io/0xa1bed0/arcanum-relay:latest
 ```
 
-See [Self-Hosting Guide](docs/SELF-HOSTING.md) for Kubernetes, Heroku, Digitalocean, building from source, etc.
+See [Self-Hosting Guide](./SELF-HOSTING.md) for Kubernetes, Heroku, Digitalocean, building from source, etc.
 
 ## Security
 
@@ -86,4 +86,4 @@ cd app && npx serve                          # App on :3000
 
 ## License
 
-[Elastic License 2.0](LICENSE.md)
+[Elastic License 2.0](LICENSE)
