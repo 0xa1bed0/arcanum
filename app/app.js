@@ -42,6 +42,7 @@ async function startReceive() {
       <div class="status success"><strong>Ready to receive!</strong><br>Share this key with sender:</div>
       <div class="key-display">${pubKeyStr}</div>
       <button class="btn copy" onclick="copyKey('${pubKeyStr}', this)">Copy Key</button>
+      <button class="btn secondary" onclick="showMain()">Back</button>
       <div class="warning">Keep this tab open. Closing destroys your private key.</div>
       <div class="status info">Waiting for secret...</div>
     `;

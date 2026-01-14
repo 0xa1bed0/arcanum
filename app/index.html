@@ -175,9 +175,11 @@
         <label>Secret</label>
         <textarea id="secret-input" placeholder="Your secret..."></textarea>
       </div>
-      <button id="send-btn" class="btn" onclick="startSend()">Send</button>
+      <div class="main-buttons">
+        <button id="send-btn" class="btn" onclick="startSend()">Send</button>
+        <button class="btn secondary" onclick="showMain()">Back</button>
+      </div>
       <div id="send-status"></div>
-      <button class="btn secondary" onclick="showMain()" style="margin-top:1rem">Back</button>
     </div>
   </div>
 
