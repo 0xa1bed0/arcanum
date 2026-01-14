@@ -64,7 +64,7 @@ docker run -d -p 8080:8080 ghcr.io/0xa1bed0/arcanum:latest
 docker run -d -p 8080:8080 ghcr.io/0xa1bed0/arcanum-relay:latest
 ```
 
-See [Self-Hosting Guide](docs/SELF-HOSTING.md) for Kubernetes, Heroku, Fly.io, Railway, building from source, etc.
+See [Self-Hosting Guide](docs/SELF-HOSTING.md) for Kubernetes, Heroku, Digitalocean, building from source, etc.
 
 ## Security
 
