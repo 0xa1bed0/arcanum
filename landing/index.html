@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcanum - Secure Secret Sharing</title>
+    <meta name="description" content="Share secrets securely with end-to-end encryption. No data stored. Encrypted relay transfer.">
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="/assets/favicon-64x64.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon-256x256.png">
+    <link rel="shortcut icon" href="/assets/favicon-32x32.png">
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="Arcanum - Secure Secret Sharing">
+    <meta property="og:description" content="Share secrets securely with end-to-end encryption. No data stored. Encrypted relay transfer.">
+    <meta property="og:image" content="https://arcanum.sh/assets/favicon-512x512.png">
+    <meta property="og:image:width" content="512">
+    <meta property="og:image:height" content="512">
+    <meta property="og:url" content="https://arcanum.sh">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Arcanum">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Arcanum - Secure Secret Sharing">
+    <meta name="twitter:description" content="Share secrets securely with end-to-end encryption. No data stored.">
+    <meta name="twitter:image" content="https://arcanum.sh/assets/favicon-512x512.png">
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#667eea">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://arcanum.sh">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --primary: #667eea;
+      --secondary: #764ba2;
+      --success: #10b981;
+      --error: #ef4444;
+      --text: #1f2937;
+      --text-light: #6b7280;
+      --bg: #f9fafb;
+      --border: #e5e7eb;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    /* Hero */
+    .hero {
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      padding: 2rem 1rem 4rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand { text-align: center; margin-bottom: 2rem; }
+    .brand img { width: 100px; height: 100px; margin-bottom: 1rem; }
+    .brand h1 { font-size: 3rem; color: white; }
+    .tagline { font-size: 1.25rem; color: rgba(255,255,255,0.9); text-align: center; margin-bottom: 0.5rem; }
+    .description { color: rgba(255,255,255,0.8); text-align: center; max-width: 600px; margin-bottom: 2rem; font-size: 1.125rem; }
+
+    /* App Box */
+    .app-box {
+      background: white;
+      border-radius: 20px;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 700px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+    }
+
+    .app-header { text-align: center; margin-bottom: 1.5rem; }
+    .app-header h2 { font-size: 1.25rem; color: var(--text); }
+    .app-header p { color: var(--text-light); font-size: 0.875rem; }
+
+    .main-buttons { display: flex; gap: 1rem; }
+
+    .btn {
+      flex: 1;
+      padding: 1rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102,126,234,0.4); }
+    .btn:disabled { background: #9ca3af; cursor: not-allowed; transform: none; }
+    .btn.secondary { background: var(--text-light); }
+    .btn.copy { background: var(--success); margin-top: 0.5rem; }
+    .btn.receive { background: linear-gradient(135deg, var(--success), #059669); }
+
+    .panel { display: none; }
+
+    .input-group { margin-bottom: 1rem; }
+    label { display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.875rem; }
+    input, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+    input:focus, textarea:focus { outline: none; border-color: var(--primary); }
+    textarea { min-height: 100px; resize: vertical; font-family: monospace; }
+
+    .status { padding: 0.75rem 1rem; border-radius: 8px; margin-top: 1rem; font-size: 0.875rem; }
+    .status.info { background: #dbeafe; color: #1e40af; }
+    .status.success { background: #d1fae5; color: #065f46; }
+    .status.error { background: #fee2e2; color: #991b1b; }
+
+    .key-display {
+      background: var(--bg);
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 0.75rem;
+      word-break: break-all;
+      margin: 1rem 0;
+      border: 2px dashed var(--primary);
+    }
+
+    .warning {
+      background: #fef3c7;
+      color: #92400e;
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      margin: 1rem 0;
+    }
+
+    .github-cta {
+      text-align: center;
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.85rem;
+      color: var(--text-light);
+    }
+    .github-cta a { color: var(--primary); text-decoration: none; }
+    .github-cta a:hover { text-decoration: underline; }
+
+    /* Sections */
+    section { padding: 5rem 1rem; }
+    .container { max-width: 900px; margin: 0 auto; }
+    .section-title { text-align: center; font-size: 2rem; margin-bottom: 0.5rem; }
+    .section-subtitle { text-align: center; color: var(--text-light); margin-bottom: 3rem; }
+    .section-subtitle a { color: var(--primary); }
+
+    /* Trust section */
+    .trust { background: white; }
+    .trust-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .trust-item { text-align: center; padding: 1.5rem; background: var(--bg); border-radius: 12px; }
+    .trust-item .number { font-size: 2.5rem; font-weight: 700; color: var(--primary); }
+    .trust-item .label { color: var(--text-light); font-size: 0.9rem; }
+    .trust-note { text-align: center; color: var(--text-light); font-size: 0.9rem; }
+    .trust-note a { color: var(--primary); }
+
+    /* Alternatives */
+    .alternatives { background: var(--bg); }
+    .alt-list { max-width: 500px; margin: 0 auto; }
+    .alt-item {
+      display: flex;
+      align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .alt-item:last-child { border-bottom: none; }
+    .alt-name {
+      font-weight: 600;
+      width: 140px;
+      flex-shrink: 0;
+    }
+    .alt-problem { color: var(--text-light); font-size: 0.9rem; }
+    .alt-item.good {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      margin: 2rem -1.5rem -1rem;
+      padding: 1.25rem 1.5rem;
+      border-radius: 12px;
+      border-bottom: none;
+    }
+    .alt-item.good .alt-name { color: white; }
+    .alt-item.good .alt-problem { color: rgba(255,255,255,0.9); }
+
+    /* How it works */
+    .how { background: white; }
+    .steps { max-width: 600px; margin: 0 auto; }
+    .step { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+    .step-num {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: bold; flex-shrink: 0;
+    }
+    .step-content strong { display: block; margin-bottom: 0.25rem; }
+    .step-content p { color: var(--text-light); font-size: 0.9rem; margin: 0; }
+
+    .tech-grid {
+      max-width: 500px;
+      margin: 3rem auto 0;
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 0.5rem 0;
+    }
+    .tech-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.6rem 1.25rem;
+      font-size: 0.85rem;
+    }
+    .tech-item strong { color: var(--text-light); font-weight: 500; }
+    .tech-item span { font-family: monospace; font-size: 0.8rem; }
+    .tech-note { text-align: center; margin-top: 2rem; color: var(--text-light); font-size: 0.85rem; }
+    .tech-note a { color: var(--primary); }
+
+    /* Server config */
+    .server-config { margin-bottom: 1.5rem; }
+    .server-bar { display: flex; align-items: center; gap: 0.5rem; }
+    .server-label { color: var(--text-light); font-size: 0.8rem; white-space: nowrap; }
+    .server-bar input {
+      flex: 1;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      border: 1px solid var(--border);
+      min-width: 0;
+    }
+    .server-bar button {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      background: var(--text-light);
+      width: auto;
+      flex-shrink: 0;
+    }
+    .server-bar button:hover { background: var(--text); transform: none; }
+    .server-help {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text-light);
+      font-size: 0.75rem;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .server-help:hover { background: var(--primary); color: white; border-color: var(--primary); }
+    .server-hint { color: var(--text-light); font-size: 0.75rem; margin-top: 0.5rem; text-align: center; }
+
+    /* Footer */
+    footer {
+      background: #0f0f1e;
+      color: white;
+      padding: 3rem 1rem;
+      text-align: center;
+    }
+    .footer-links { margin-bottom: 1.5rem; }
+    .footer-links a { color: rgba(255,255,255,0.7); text-decoration: none; margin: 0 1rem; }
+    .footer-links a:hover { color: white; }
+    .footer-products {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+      font-size: 0.875rem;
+    }
+    .footer-products span { color: rgba(255,255,255,0.5); }
+    .footer-products a {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      padding: 0.4rem 0.9rem;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+      transition: all 0.2s;
+    }
+    .footer-products a:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.4);
+      color: white;
+    }
+    .copyright { color: rgba(255,255,255,0.5); font-size: 0.875rem; }
+
+    /* GitHub link */
+    .github-link {
+      position: fixed;
+      top: 1rem; right: 1rem;
+      background: white;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 500;
+      font-size: 0.875rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .github-link:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+    .github-link svg { width: 18px; height: 18px; }
+
+    @media (max-width: 600px) {
+      .brand h1 { font-size: 2.5rem; }
+      .app-box { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <a href="https://github.com/0xa1bed0/arcanum" target="_blank" class="github-link">
+    <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+    GitHub
+  </a>
+
+  <section class="hero">
+    <div class="brand">
+      <img src="assets/favicon-256x256.png" alt="Arcanum">
+      <h1>Arcanum</h1>
+    </div>
+    <p class="tagline">Share secrets securely</p>
+    <p class="description">End-to-end encrypted. No storage. No accounts. Auditable code.</p>
+
+    <div class="app-box">
+      <div class="app-header">
+        <h2>Try it now</h2>
+        <p>No signup required</p>
+      </div>
+
+      <div class="server-config">
+        <div class="server-bar">
+          <span class="server-label">Relay:</span>
+          <input type="text" id="relay-url" placeholder="wss://relay.arcanum.sh">
+          <button class="btn" onclick="updateRelay()">Set</button>
+          <a href="https://github.com/0xa1bed0/arcanum/blob/main/docs/SELF-HOSTING.md" target="_blank" class="server-help" title="Self-host your own relay">?</a>
+        </div>
+        <p class="server-hint">Your secret is encrypted in the browser before sending. The relay only passes through the encrypted data.</p>
+      </div>
+
+      <div id="main-buttons" class="main-buttons">
+        <button class="btn receive" onclick="startReceive()">Receive</button>
+        <button class="btn" onclick="showSend()">Send</button>
+      </div>
+
+      <div id="receive-panel" class="panel">
+        <div id="receive-status"></div>
+      </div>
+
+      <div id="send-panel" class="panel">
+        <div class="input-group">
+          <label>Receiver's Key</label>
+          <input type="text" id="receiver-key" placeholder="arc1pk_...">
+        </div>
+        <div class="input-group">
+          <label>Secret</label>
+          <textarea id="secret-input" placeholder="Your secret..."></textarea>
+        </div>
+        <button id="send-btn" class="btn" onclick="startSend()">Send</button>
+        <div id="send-status"></div>
+        <button class="btn secondary" onclick="showMain()" style="margin-top:1rem">Back</button>
+      </div>
+
+      <div class="github-cta">
+        Useful? <a href="https://github.com/0xa1bed0/arcanum" target="_blank">Star us on GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="trust">
+    <div class="container">
+      <h2 class="section-title">Why trust this?</h2>
+      <p class="section-subtitle">The code is tiny. Read it yourself.</p>
+
+      <div class="trust-grid">
+        <div class="trust-item">
+          <div class="number">~60</div>
+          <div class="label">lines in server</div>
+        </div>
+        <div class="trust-item">
+          <div class="number">~55</div>
+          <div class="label">lines of crypto</div>
+        </div>
+        <div class="trust-item">
+          <div class="number">1</div>
+          <div class="label">dependency</div>
+        </div>
+        <div class="trust-item">
+          <div class="number">0</div>
+          <div class="label">data stored</div>
+        </div>
+      </div>
+
+      <p class="trust-note">
+        No frameworks. No build step. You can audit the entire thing in 10 minutes.<br>
+        <a href="https://github.com/0xa1bed0/arcanum" target="_blank">View source on GitHub</a>
+      </p>
+    </div>
+  </section>
+
+  <section class="alternatives">
+    <div class="container">
+      <h2 class="section-title">Why not just use...</h2>
+
+      <div class="alt-list">
+        <div class="alt-item">
+          <span class="alt-name">DM</span>
+          <span class="alt-problem">Logged forever</span>
+        </div>
+        <div class="alt-item">
+          <span class="alt-name">Email</span>
+          <span class="alt-problem">Stored on servers, often unencrypted in transit</span>
+        </div>
+        <div class="alt-item">
+          <span class="alt-name">Signal</span>
+          <span class="alt-problem">Both parties need accounts and the app</span>
+        </div>
+        <div class="alt-item">
+          <span class="alt-name">PGP</span>
+          <span class="alt-problem">Let's be honest, nobody has it set up</span>
+        </div>
+        <div class="alt-item">
+          <span class="alt-name">Password Manager</span>
+          <span class="alt-problem">Paid subscription, both need accounts</span>
+        </div>
+        <div class="alt-item good">
+          <span class="alt-name">Arcanum</span>
+          <span class="alt-problem">Open browser. Share key. Done.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="how">
+    <div class="container">
+      <h2 class="section-title">How it works</h2>
+      <p class="section-subtitle">RSA-OAEP 2048-bit encryption, all in your browser</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <strong>Receiver clicks "Receive"</strong>
+            <p>Browser generates RSA keypair. Private key stays in memory.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <strong>Share the public key</strong>
+            <p>Copy the arc1pk_... key and send via Slack, email, etc.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <strong>Sender encrypts & sends</strong>
+            <p>Secret encrypted in browser, sent through relay as encrypted blob.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <strong>Receiver decrypts</strong>
+            <p>Browser decrypts with private key. Keys destroyed after use.</p>
+          </div>
+        </div>
+      </div>
+
+      <p class="tech-note">
+        The server is a dumb pipe. It forwards encrypted data without being able to read it.<br>
+        <a href="https://github.com/0xa1bed0/arcanum/blob/main/app/app.js#83" target="_blank">View app.js</a>
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-links">
+      <a href="https://github.com/0xa1bed0/arcanum" target="_blank">GitHub</a>
+      <a href="https://github.com/0xa1bed0/arcanum/blob/main/docs/SELF-HOSTING.md" target="_blank">Self-Host</a>
+    </div>
+    <div class="footer-products">
+      <span>More from Albedo:</span>
+      <a href="https://iusevimbtw.com" target="_blank">iusevimbtw.com</a>
+      <a href="https://mkenv.sh" target="_blank">mkenv.sh</a>
+    </div>
+    <p class="copyright">Albedo Technologies - Elastic License 2.0</p>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="crypto.js"></script>
+  <script src="relay.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

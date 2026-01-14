@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arcanum</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-64x64.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon-256x256.png">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --primary: #667eea;
+      --success: #10b981;
+      --error: #ef4444;
+      --text: #1f2937;
+      --text-light: #6b7280;
+      --bg: #f9fafb;
+      --border: #e5e7eb;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .app {
+      background: white;
+      border-radius: 20px;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 700px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+    .brand img {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 0.5rem;
+    }
+    .brand h1 {
+      color: var(--text);
+      font-size: 1.5rem;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: var(--text-light);
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+    }
+
+    .main-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 1rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--primary), #764ba2);
+      color: white;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102,126,234,0.4); }
+    .btn:disabled { background: #9ca3af; cursor: not-allowed; transform: none; }
+    .btn.secondary { background: var(--text-light); }
+    .btn.copy { background: var(--success); margin-top: 0.5rem; }
+    .btn.receive { background: linear-gradient(135deg, var(--success), #059669); }
+
+    .panel { display: none; }
+
+    .input-group { margin-bottom: 1rem; }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text);
+      font-size: 0.875rem;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+      font-family: monospace;
+    }
+
+    .status {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+      font-size: 0.875rem;
+    }
+
+    .status.info { background: #dbeafe; color: #1e40af; }
+    .status.success { background: #d1fae5; color: #065f46; }
+    .status.error { background: #fee2e2; color: #991b1b; }
+
+    .key-display {
+      background: var(--bg);
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 0.75rem;
+      word-break: break-all;
+      margin: 1rem 0;
+      border: 2px dashed var(--primary);
+    }
+
+    .warning {
+      background: #fef3c7;
+      color: #92400e;
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      margin: 1rem 0;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="brand">
+      <img src="assets/favicon-128x128.png" alt="Arcanum">
+      <h1>Arcanum</h1>
+    </div>
+    <p class="subtitle">Encrypted secret sharing</p>
+
+    <div id="main-buttons" class="main-buttons">
+      <button class="btn receive" onclick="startReceive()">Receive</button>
+      <button class="btn" onclick="showSend()">Send</button>
+    </div>
+
+    <div id="receive-panel" class="panel">
+      <div id="receive-status"></div>
+    </div>
+
+    <div id="send-panel" class="panel">
+      <div class="input-group">
+        <label>Receiver's Key</label>
+        <input type="text" id="receiver-key" placeholder="arc1pk_...">
+      </div>
+      <div class="input-group">
+        <label>Secret</label>
+        <textarea id="secret-input" placeholder="Your secret..."></textarea>
+      </div>
+      <button id="send-btn" class="btn" onclick="startSend()">Send</button>
+      <div id="send-status"></div>
+      <button class="btn secondary" onclick="showMain()" style="margin-top:1rem">Back</button>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="crypto.js"></script>
+  <script src="relay.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

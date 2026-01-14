@@ -1,17 +1,39 @@
 version: '3.8'
 
 services:
-  server:
-    build:
-      context: ./server
-      dockerfile: Dockerfile
+  arcanum:
+    image: ghcr.io/0xa1bed0/arcanum:latest
     ports:
       - "8080:8080"
-    environment:
-      - PORT=8080
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 3s
-      retries: 3
+    # Security hardening
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /run/nginx:mode=755,uid=1001,gid=1001
+      - /var/lib/nginx/tmp:mode=755,uid=1001,gid=1001
+      - /var/log/nginx:mode=755,uid=1001,gid=1001
+
+  # Alternative: relay only
+  # relay:
+  #   image: ghcr.io/0xa1bed0/arcanum-relay:latest
+  #   ports:
+  #     - "8080:8080"
+  #   restart: unless-stopped
+  #   read_only: true
+  #   security_opt:
+  #     - no-new-privileges:true
+  #   cap_drop:
+  #     - ALL
+
+  # Build from source instead of using pre-built images:
+  # arcanum:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/Dockerfile.app
+  #   ports:
+  #     - "8080:8080"
+  #   restart: unless-stopped
