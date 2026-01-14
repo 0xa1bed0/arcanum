@@ -140,15 +140,6 @@ sudo certbot --nginx -d arcanum.yourdomain.com
 |----------|---------|-------------|
 | `PORT` | 8080 | Server port |
 
-### Rate Limiting
-
-The server includes built-in rate limiting to prevent abuse:
-
-- **General rate limit**: 60 requests per minute per IP
-- **Session limit**: 20 sessions per minute per IP
-
-Rate limits are relaxed to accommodate users behind shared IPs (NAT, VPN, corporate networks). For real DDoS protection, deploy behind Cloudflare or similar.
-
 ## Connecting the Web App
 
 Once your server is running, configure the Arcanum web app to use it:

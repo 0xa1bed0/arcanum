@@ -8,11 +8,10 @@ Encrypted secret sharing with relay transfer.
 ## Features
 
 - **End-to-end encryption** - RSA-OAEP 2048-bit
-- **Encrypted relay** - Server only sees encrypted blobs
-- **No secrets stored** - Zero retention policy
+- **Real-time relay** - Server acts as a pipe, no storage
 - **Ephemeral keys** - One-time use only
 - **Self-hostable** - Run your own server
-- **Custom server support** - Use your own infrastructure
+- **Auto-retry** - Sender retries for 2 min if receiver not ready
 
 ## Quick Start
 
@@ -77,19 +76,11 @@ cd web
 npx live-server --port=8000
 ```
 
-## Rate Limiting
-
-The server includes built-in rate limiting to prevent casual abuse:
-- **60 requests** per minute per IP
-- **20 sessions** per minute per IP
-
-For real DDoS protection, deploy behind Cloudflare or similar.
-
 ## Security
 
 - All encryption happens client-side
 - Server cannot decrypt secrets
-- No data written to disk or databases
+- No storage - server is a real-time pipe
 - Keys are ephemeral and destroyed after use
 - Open source for security audits
 

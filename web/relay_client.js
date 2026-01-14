@@ -8,9 +8,9 @@ function connectWebSocket(url) {
         const ws = new WebSocket(url);
 
         ws.onopen = () => resolve(ws);
-        ws.onerror = (err) => { 
+        ws.onerror = (err) => {
             console.log('Relay server connection error:', err);
-            reject(new Error('Failed to connect')); 
+            reject(new Error('Failed to connect'));
         }
 
         setTimeout(() => reject(new Error('Connection timeout')), 5000);
@@ -50,25 +50,22 @@ async function waitForRelayData(keyHash) {
 
         ws.addEventListener('message', handler);
 
-        // 60 second timeout
-        setTimeout(() => {
+        // No timeout - receiver stays connected until data arrives or tab closes
+        ws.onclose = () => {
             ws.removeEventListener('message', handler);
-            ws.close();
-            reject(new Error('Receive timeout'));
-        }, 60000);
+            reject(new Error('Connection closed'));
+        };
     });
 }
 
-async function sendViaRelay(keyHash, encrypted) {
+async function sendOnce(keyHash, b64Data) {
     const ws = await connectWebSocket(RELAY_SERVER);
 
     return new Promise((resolve, reject) => {
-        const b64 = btoa(String.fromCharCode(...encrypted));
-
         ws.send(JSON.stringify({
             type: 'send',
             keyHash: keyHash,
-            data: b64
+            data: b64Data
         }));
 
         const handler = (event) => {
@@ -84,6 +81,45 @@ async function sendViaRelay(keyHash, encrypted) {
         };
 
         ws.addEventListener('message', handler);
-        setTimeout(() => reject(new Error('Send timeout')), 5000);
+        setTimeout(() => {
+            ws.removeEventListener('message', handler);
+            ws.close();
+            reject(new Error('Send timeout'));
+        }, 5000);
     });
+}
+
+// Send with retry logic
+// - Fails fast on 'receiver_not_found' (unknown key)
+// - Retries for up to 2 minutes on other errors
+async function sendViaRelay(keyHash, encrypted, onStatus) {
+    const b64 = btoa(String.fromCharCode(...encrypted));
+    const maxRetryTime = 2 * 60 * 1000; // 2 minutes
+    const retryInterval = 3000; // 3 seconds
+    const startTime = Date.now();
+
+    while (true) {
+        try {
+            await sendOnce(keyHash, b64);
+            return; // Success
+        } catch (err) {
+            // Fail fast on unknown key
+            if (err.message === 'receiver_not_found') {
+                throw new Error('Receiver not found. Check that the key is correct and receiver is waiting.');
+            }
+
+            // Check if we've exceeded retry time
+            if (Date.now() - startTime >= maxRetryTime) {
+                throw new Error('Failed to deliver after 2 minutes of retrying.');
+            }
+
+            // Retry on other errors (receiver_offline, connection issues, etc.)
+            const remaining = Math.ceil((maxRetryTime - (Date.now() - startTime)) / 1000);
+            if (onStatus) {
+                onStatus(`Retrying... (${remaining}s remaining)`);
+            }
+
+            await new Promise(r => setTimeout(r, retryInterval));
+        }
+    }
 }

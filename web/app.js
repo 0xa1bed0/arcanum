@@ -101,7 +101,9 @@ async function startSend() {
         const keyHash = await hashPublicKey(receiverKeyStr);
         const encrypted = await encryptData(new TextEncoder().encode(secret), publicKey);
 
-        await sendViaRelay(keyHash, encrypted);
+        await sendViaRelay(keyHash, encrypted, (status) => {
+            statusDiv.innerHTML = `<div class="status info">${status}</div>`;
+        });
 
         statusDiv.innerHTML = '<div class="status success">Secret sent successfully!</div>';
 
@@ -118,12 +120,8 @@ async function startSend() {
 
         if (errorMsg.includes('Failed to import key')) {
             errorMsg = 'Invalid receiver key. Please check that you copied the complete key correctly.';
-        } else if (errorMsg.includes('receiver_offline')) {
-            errorMsg = 'Receiver is offline. Make sure they clicked "Receive" and are waiting.';
-        } else if (errorMsg.includes('Connection timeout')) {
+        } else if (errorMsg.includes('Connection timeout') || errorMsg.includes('Failed to connect')) {
             errorMsg = 'Could not connect to server. Please check your internet connection.';
-        } else if (errorMsg.includes('rate_limit')) {
-            errorMsg = 'Rate limit exceeded. Please wait a minute before trying again.';
         }
 
         statusDiv.innerHTML = `<div class="status error">${errorMsg}</div>`;

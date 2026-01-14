@@ -1030,7 +1030,7 @@
                 <div class="feature-card">
                     <div class="feature-icon">🗑️</div>
                     <h3>No Persistence</h3>
-                    <p>No database. Encrypted data held in server memory max 10 minutes, deleted immediately after delivery.</p>
+                    <p>No database. No storage. Server acts as a real-time pipe - data flows directly from sender to receiver.</p>
                 </div>
 
                 <div class="feature-card">
@@ -1092,7 +1092,7 @@
                 <div class="server-info">
                     <div class="server-box">
                         <strong>Relay Server</strong>
-                        <p>Holds encrypted data in memory until receiver picks it up. Cannot decrypt - only receiver has the private key. Data deleted after delivery or 10 min timeout.</p>
+                        <p>Acts as a real-time pipe between sender and receiver. Cannot decrypt - only receiver has the private key. No data stored, just forwarded instantly.</p>
                     </div>
                 </div>
             </div>
@@ -1115,12 +1115,12 @@
                     <span>~190 bytes (RSA-OAEP limit)</span>
                 </div>
                 <div class="tech-item">
-                    <strong>Receive Timeout</strong>
-                    <span>60 seconds</span>
+                    <strong>Transfer</strong>
+                    <span>Real-time pipe, no storage</span>
                 </div>
                 <div class="tech-item">
-                    <strong>Server Retention</strong>
-                    <span>Max 10 min in memory, no disk</span>
+                    <strong>Retry</strong>
+                    <span>Auto-retry for 2 min if needed</span>
                 </div>
             </div>
             <p class="tech-note">
